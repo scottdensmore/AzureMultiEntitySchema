@@ -12,5 +12,4 @@ web role that saves both expense and expense items to one table.
 
 ## Blog Post(s)
 
-* Azure Deployment for your Build Server - 
-<http://scottdensmore.typepad.com/blog/2010/03/azure-deployment-for-your-build-server.html>
+* 
