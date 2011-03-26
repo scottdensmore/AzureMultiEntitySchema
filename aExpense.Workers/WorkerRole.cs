@@ -25,6 +25,10 @@
 
         public override void Run()
         {
+            try
+            {
+
+            
             CloudStorageAccount account = CloudConfiguration.GetStorageAccount(AzureConnectionStrings.DataConnection);
 
             // Receipt Queue
@@ -44,6 +48,12 @@
             while (true)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(5));
+            }
+            }
+            catch (Exception e)
+            {
+                Log.Write(EventKind.Error, e.Message);
+                throw;
             }
         }
 
