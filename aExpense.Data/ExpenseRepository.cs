@@ -38,6 +38,7 @@ namespace AExpense.Data
             var nextExpenseRowId = expenseRowKey + charAfterSeparator;
             string expenseItemRowKey = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ExpenseItemEntity.RowKeyPrefix, expenseId);
             var nextExpenseItemRowId = expenseItemRowKey + charAfterSeparator;
+            // TODO: Update to only have to compare to the expense id key and not the entire row
             var expenseQuery = (from e in context.ExpenseExpenseItem
                                 where e.PartitionKey == username.EncodePartitionAndRowKey()
                                       && ((e.RowKey.CompareTo(expenseRowKey) >= 0
@@ -190,7 +191,7 @@ namespace AExpense.Data
                 {
                     this.receiptStorage.AddReceipt(expenseItem.Id, expenseItem.Receipt, string.Empty);
 
-                    var queue = new AzureQueue<NewReceiptMessage>(this.account, AzureStorageNames.ReceiptContainerName);
+                    var queue = new AzureQueue<NewReceiptMessage>(this.account, AzureStorageNames.NewReceiptMessage);
                     queue.AddMessage(new NewReceiptMessage
                                          {
                                              ExpenseItemId = expenseItem.Id,
@@ -208,7 +209,7 @@ namespace AExpense.Data
             IExpenseEntity expenseRow = GetExpenseRowById(context, expense.User.UserName, expense.Id);
             expenseRow.Approved = expense.Approved;
 
-            var queue = new AzureQueue<ApprovedExpenseMessage>(this.account, AzureStorageNames.ExpenseExportContainerName);
+            var queue = new AzureQueue<ApprovedExpenseMessage>(this.account, AzureStorageNames.ApprovedExpenseMessage);
             queue.AddMessage(new ApprovedExpenseMessage { ExpenseId = expense.Id, ApproveDate = DateTime.UtcNow, Username = expense.User.UserName });
 
             context.UpdateObject(expenseRow);

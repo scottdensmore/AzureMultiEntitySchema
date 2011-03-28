@@ -18,12 +18,20 @@
             cloudTableClient.CreateTableIfNotExist<ExpenseExportEntity>(AzureStorageNames.ExpenseExportTable);
 
             // Blobs
-            var client = account.CreateCloudBlobClient();
+            CloudBlobClient client = account.CreateCloudBlobClient();
             client.RetryPolicy = RetryPolicies.Retry(3, TimeSpan.FromSeconds(5));
             var container = client.GetContainerReference(AzureStorageNames.ReceiptContainerName);
             container.CreateIfNotExist();
             container = client.GetContainerReference(AzureStorageNames.ExpenseExportContainerName);
             container.CreateIfNotExist();
+
+            // Queues
+            CloudQueueClient queueClient = account.CreateCloudQueueClient();
+            queueClient.RetryPolicy = RetryPolicies.Retry(3, TimeSpan.FromSeconds(5));
+            CloudQueue queueReference = queueClient.GetQueueReference(AzureStorageNames.ApprovedExpenseMessage);
+            queueReference.CreateIfNotExist();
+            queueReference = queueClient.GetQueueReference(AzureStorageNames.NewReceiptMessage);
+            queueReference.CreateIfNotExist();
         }
     }
 }

@@ -19,7 +19,7 @@
             ServicePointManager.DefaultConnectionLimit = 12;
             DiagnosticMonitor.Start(AzureConnectionStrings.Diagnostics);
             RoleEnvironment.Changing += RoleEnvironmentChanging;
-
+            ApplicationStorageInitializer.Initialize();
             return base.OnStart();
         }
 
@@ -32,12 +32,12 @@
             CloudStorageAccount account = CloudConfiguration.GetStorageAccount(AzureConnectionStrings.DataConnection);
 
             // Receipt Queue
-            var receiptQueue = new AzureQueue<NewReceiptMessage>(account, AzureStorageNames.ReceiptContainerName);
+            var receiptQueue = new AzureQueue<NewReceiptMessage>(account, AzureStorageNames.NewReceiptMessage);
             var receiptQueueCommand = new ReceiptThumbnailQueueCommand();
             QueueCommandHandler.For(receiptQueue).Every(TimeSpan.FromSeconds(5)).Do(receiptQueueCommand);
 
             // ExpenseExportQueueCommand
-            var exportQueue = new AzureQueue<ApprovedExpenseMessage>(account, AzureStorageNames.ExpenseExportContainerName);
+            var exportQueue = new AzureQueue<ApprovedExpenseMessage>(account, AzureStorageNames.ApprovedExpenseMessage);
             var exportQueueCommand = new ExpenseExportQueueCommand();
             QueueCommandHandler.For(exportQueue).Every(TimeSpan.FromSeconds(5)).Do(exportQueueCommand);
 

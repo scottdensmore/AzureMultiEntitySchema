@@ -6,5 +6,7 @@
         public const string ExpenseTable = "Expenses";
         public const string ReceiptContainerName = "receipt";
         public const string ExpenseExportContainerName = "expenseout";
+        public const string ApprovedExpenseMessage = "approvedexpensemessage";
+        public const string NewReceiptMessage = "newreceiptmessage";
     }
 }
