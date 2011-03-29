@@ -10,7 +10,7 @@
         <Columns>        
             <asp:BoundField DataField="Date" HeaderText="Date" SortExpression="Date" DataFormatString="{0:MM/dd/yyyy}" ReadOnly="True" />
             <asp:BoundField DataField="Title" HeaderText="Title" SortExpression="Title" ReadOnly="True" />
-            <asp:BoundField DataField="UserName" HeaderText="User" ReadOnly="True" Visible="false" />
+            <asp:BoundField DataField="UserName" HeaderText="User" ReadOnly="True" />
             <asp:TemplateField HeaderText="Status" SortExpression="Approved"  ItemStyle-HorizontalAlign="Center">
                     <ItemTemplate>
                         <%# (Boolean.Parse(Eval("Approved").ToString())) ? "Ready for Processing" : "Pending for Approval"%>

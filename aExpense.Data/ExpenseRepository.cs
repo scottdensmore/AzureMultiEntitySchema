@@ -196,7 +196,7 @@ namespace AExpense.Data
                                          {
                                              ExpenseItemId = expenseItem.Id,
                                              ExpenseId = expense.Id,
-                                             Username = expense.User.UserName
+                                             Username = expense.UserName
                                          });
                 }
             }
@@ -206,11 +206,11 @@ namespace AExpense.Data
         {
             var context = new ExpenseDataContext(this.account);
 
-            IExpenseEntity expenseRow = GetExpenseRowById(context, expense.User.UserName, expense.Id);
+            IExpenseEntity expenseRow = GetExpenseRowById(context, expense.UserName, expense.Id);
             expenseRow.Approved = expense.Approved;
 
             var queue = new AzureQueue<ApprovedExpenseMessage>(this.account, AzureStorageNames.ApprovedExpenseMessage);
-            queue.AddMessage(new ApprovedExpenseMessage { ExpenseId = expense.Id, ApproveDate = DateTime.UtcNow, Username = expense.User.UserName });
+            queue.AddMessage(new ApprovedExpenseMessage { ExpenseId = expense.Id, ApproveDate = DateTime.UtcNow, Username = expense.UserName });
 
             context.UpdateObject(expenseRow);
             context.SaveChanges();

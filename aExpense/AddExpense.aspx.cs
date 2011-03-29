@@ -130,7 +130,7 @@
                 CostCenter = user.CostCenter,
                 Approved = false,
                 ReimbursementMethod = (ReimbursementMethod)Enum.Parse(typeof(ReimbursementMethod), this.ExpenseReimbursementMethod.SelectedItem.Value),
-                User = user,
+                UserName = user.UserName,
                 Date = DateTime.Parse(this.ExpenseDate.Text, CultureInfo.CurrentUICulture),
                 ApproverName = approverName
             };

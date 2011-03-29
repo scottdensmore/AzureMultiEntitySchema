@@ -47,7 +47,7 @@
                                                Id = expense.Id,
                                                ReimbursementMethod = expense.ReimbursementMethod,
                                                TotalAmount = totalToPay,
-                                               UserName = expense.User.UserName
+                                               UserName = expense.UserName
                                            };
                 this.expenseExports.Save(export);
             }

@@ -34,7 +34,7 @@
                     throw new ArgumentException(errorMessage);
                 }
 
-                if (expense.User.UserName != this.User.Identity.Name)
+                if (expense.UserName != this.User.Identity.Name)
                 {
                     string errorMessage = string.Format("{0} cannot access the expense with id {1}.", this.User.Identity.Name, expense.Id);
                     throw new UnauthorizedAccessException(errorMessage);

@@ -36,7 +36,8 @@
                                   Date = entity.Date.HasValue ? entity.Date.Value : DateTime.UtcNow,
                                   ReimbursementMethod = (ReimbursementMethod) Enum.Parse(typeof (ReimbursementMethod), entity.ReimbursementMethod),
                                   Title = entity.Title,
-                                  User = new User {UserName = entity.PartitionKey.DecodePartitionAndRowKey()},
+                                  UserName = entity.PartitionKey.DecodePartitionAndRowKey(),
+                                  //User = new User {UserName = entity.PartitionKey.DecodePartitionAndRowKey()},
                                   ApproverName = entity.ApproverName
                               };
 
@@ -96,7 +97,7 @@
         {
             var expense = new ExpenseEntity
                               {
-                                  PartitionKey = model.User.UserName.EncodePartitionAndRowKey(),
+                                  PartitionKey = model.UserName.EncodePartitionAndRowKey(),
                                   RowKey = model.Id == null ? null : KeyGenerator.ExpenseEntityRowKey(model.Id.ToString()),
                                   Approved = model.Approved,
                                   CostCenter = model.CostCenter,

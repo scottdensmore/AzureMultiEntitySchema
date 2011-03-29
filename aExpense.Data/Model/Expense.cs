@@ -18,12 +18,7 @@ namespace AExpense.Data.Model
         public string Id { get; set; }
         public ReimbursementMethod ReimbursementMethod { get; set; }
         public string Title { get; set; }
-        public User User { get; set; }
-
-        public string UserName
-        {
-            get { return User.UserName; }
-            set { User = new User {UserName = value}; }
-        }
+        //public User User { get; set; }
+        public string UserName { get; set; }
     }
 }

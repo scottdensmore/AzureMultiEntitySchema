@@ -27,28 +27,26 @@
         {
             try
             {
+                CloudStorageAccount account = CloudConfiguration.GetStorageAccount(AzureConnectionStrings.DataConnection);
 
-            
-            CloudStorageAccount account = CloudConfiguration.GetStorageAccount(AzureConnectionStrings.DataConnection);
+                // Receipt Queue
+                var receiptQueue = new AzureQueue<NewReceiptMessage>(account, AzureStorageNames.NewReceiptMessage);
+                var receiptQueueCommand = new ReceiptThumbnailQueueCommand();
+                QueueCommandHandler.For(receiptQueue).Every(TimeSpan.FromSeconds(5)).Do(receiptQueueCommand);
 
-            // Receipt Queue
-            var receiptQueue = new AzureQueue<NewReceiptMessage>(account, AzureStorageNames.NewReceiptMessage);
-            var receiptQueueCommand = new ReceiptThumbnailQueueCommand();
-            QueueCommandHandler.For(receiptQueue).Every(TimeSpan.FromSeconds(5)).Do(receiptQueueCommand);
-
-            // ExpenseExportQueueCommand
-            var exportQueue = new AzureQueue<ApprovedExpenseMessage>(account, AzureStorageNames.ApprovedExpenseMessage);
-            var exportQueueCommand = new ExpenseExportQueueCommand();
-            QueueCommandHandler.For(exportQueue).Every(TimeSpan.FromSeconds(5)).Do(exportQueueCommand);
+                // ExpenseExportQueueCommand
+                var exportQueue = new AzureQueue<ApprovedExpenseMessage>(account, AzureStorageNames.ApprovedExpenseMessage);
+                var exportQueueCommand = new ExpenseExportQueueCommand();
+                QueueCommandHandler.For(exportQueue).Every(TimeSpan.FromSeconds(5)).Do(exportQueueCommand);
 
 
-            // Expense Export
-            CommandHandler.Every(TimeSpan.FromSeconds(60)).Do(new ExpenseExportCommand());
+                // Expense Export
+                CommandHandler.Every(TimeSpan.FromSeconds(60)).Do(new ExpenseExportCommand());
 
-            while (true)
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-            }
+                while (true)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
             }
             catch (Exception e)
             {
