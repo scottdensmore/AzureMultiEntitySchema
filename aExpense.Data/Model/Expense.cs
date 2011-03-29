@@ -7,7 +7,7 @@ namespace AExpense.Data.Model
     {
         public Expense()
         {
-            this.Details = new List<ExpenseItem>();
+            Details = new List<ExpenseItem>();
         }
 
         public bool Approved { get; set; }
@@ -19,5 +19,11 @@ namespace AExpense.Data.Model
         public ReimbursementMethod ReimbursementMethod { get; set; }
         public string Title { get; set; }
         public User User { get; set; }
+
+        public string UserName
+        {
+            get { return User.UserName; }
+            set { User = new User {UserName = value}; }
+        }
     }
 }

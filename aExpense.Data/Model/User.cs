@@ -19,6 +19,11 @@
 
         public string CostCenter { get; set; }
 
-        public ReimbursementMethod PreferredReimbursementMethod { get; set; }        
+        public ReimbursementMethod PreferredReimbursementMethod { get; set; }
+
+        public override string ToString()
+        {
+            return UserName;
+        }
     }
 }
