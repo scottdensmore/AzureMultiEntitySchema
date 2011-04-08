@@ -30,7 +30,11 @@
             queueClient.RetryPolicy = RetryPolicies.Retry(3, TimeSpan.FromSeconds(5));
             CloudQueue queueReference = queueClient.GetQueueReference(AzureStorageNames.ApprovedExpenseMessage);
             queueReference.CreateIfNotExist();
+            queueReference = queueClient.GetQueueReference(AzureStorageNames.PoisonApprovedExpenseMessage);
+            queueReference.CreateIfNotExist();
             queueReference = queueClient.GetQueueReference(AzureStorageNames.NewReceiptMessage);
+            queueReference.CreateIfNotExist();
+            queueReference = queueClient.GetQueueReference(AzureStorageNames.PoisonNewReceiptMessage);
             queueReference.CreateIfNotExist();
         }
     }

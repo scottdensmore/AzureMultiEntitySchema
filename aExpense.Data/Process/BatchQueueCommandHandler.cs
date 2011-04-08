@@ -17,6 +17,7 @@
     {
         private readonly IAzureQueue<T> queue;
         private TimeSpan interval;
+        private IAzureQueue<T> poisonMessageQueue;
 
         protected BatchProcessingQueueHandler(IAzureQueue<T> queue)
         {
@@ -32,6 +33,18 @@
             }
 
             return new BatchProcessingQueueHandler<T>(queue);
+        }
+
+        public BatchProcessingQueueHandler<T> WithPosionMessageQueue(IAzureQueue<T> poisonQueue)
+        {
+            if (poisonQueue == null)
+            {
+                throw new ArgumentNullException("poisonQueue");
+            }
+
+            this.poisonMessageQueue = poisonQueue;
+
+            return this;
         }
 
         public BatchProcessingQueueHandler<T> Every(TimeSpan intervalBetweenRuns)
@@ -64,7 +77,7 @@
                 do
                 {
                     var messages = this.queue.GetMessages(32);
-                    ProcessMessages(this.queue, messages, batchQueueCommand.Run);
+                    ProcessMessages(this.queue, this.poisonMessageQueue, messages, batchQueueCommand.Run);
 
                     continueProcessing = messages.Count() > 0;
                 } 

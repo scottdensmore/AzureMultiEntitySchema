@@ -4,10 +4,10 @@
     using System.Linq;
     using System.Net;
     using System.Threading;
-    using AExpense.Data;
-    using AExpense.Data.Messages;
-    using AExpense.Data.Process;
-    using AExpense.Data.Storage;
+    using Data;
+    using Data.Messages;
+    using Data.Process;
+    using Data.Storage;
     using Microsoft.WindowsAzure;
     using Microsoft.WindowsAzure.Diagnostics;
     using Microsoft.WindowsAzure.ServiceRuntime;
@@ -31,13 +31,15 @@
 
                 // Receipt Queue
                 var receiptQueue = new AzureQueue<NewReceiptMessage>(account, AzureStorageNames.NewReceiptMessage);
+                var poisonReceiptQueue = new AzureQueue<NewReceiptMessage>(account, AzureStorageNames.PoisonNewReceiptMessage);
                 var receiptQueueCommand = new ReceiptThumbnailQueueCommand();
-                QueueCommandHandler.For(receiptQueue).Every(TimeSpan.FromSeconds(5)).Do(receiptQueueCommand);
+                QueueCommandHandler.For(receiptQueue).Every(TimeSpan.FromSeconds(5)).WithPosionMessageQueue(poisonReceiptQueue).Do(receiptQueueCommand);
 
                 // ExpenseExportQueueCommand
                 var exportQueue = new AzureQueue<ApprovedExpenseMessage>(account, AzureStorageNames.ApprovedExpenseMessage);
+                var poisonExportQueue = new AzureQueue<ApprovedExpenseMessage>(account, AzureStorageNames.PoisonApprovedExpenseMessage);
                 var exportQueueCommand = new ExpenseExportQueueCommand();
-                QueueCommandHandler.For(exportQueue).Every(TimeSpan.FromSeconds(5)).Do(exportQueueCommand);
+                QueueCommandHandler.For(exportQueue).Every(TimeSpan.FromSeconds(5)).WithPosionMessageQueue(poisonExportQueue).Do(exportQueueCommand);
 
 
                 // Expense Export

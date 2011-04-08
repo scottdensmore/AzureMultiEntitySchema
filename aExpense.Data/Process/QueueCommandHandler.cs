@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using AExpense.Data.Storage;
+    using Storage;
 
     public static class QueueCommandHandler
     {
@@ -16,6 +16,7 @@
     {
         private readonly IAzureQueue<T> queue;
         private TimeSpan interval;
+        private IAzureQueue<T> poisonMessageQueue;
 
         protected QueueCommandHandler(IAzureQueue<T> queue)
         {
@@ -53,11 +54,23 @@
             return this;
         }
 
+        public QueueCommandHandler<T> WithPosionMessageQueue(IAzureQueue<T> poisonQueue)
+        {
+            if (poisonQueue == null)
+            {
+                throw new ArgumentNullException("poisonQueue");
+            }
+
+            poisonMessageQueue = poisonQueue;
+
+            return this;
+        }
+
         protected void Cycle(IQueueCommand<T> queueCommand)
         {
             try
             {
-                ProcessMessages(queue, queue.GetMessages(1), queueCommand.Run);
+                ProcessMessages(queue, poisonMessageQueue, queue.GetMessages(1), queueCommand.Run);
 
                 Sleep(interval);
             }

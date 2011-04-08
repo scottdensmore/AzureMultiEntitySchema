@@ -7,7 +7,7 @@
 
     public abstract class GenericQueueHandler<T> where T : AzureQueueMessage
     {
-        protected static void ProcessMessages(IAzureQueue<T> queue, IEnumerable<T> messages, Action<T> action)
+        protected static void ProcessMessages(IAzureQueue<T> queue, IAzureQueue<T> deadQueue, IEnumerable<T> messages, Action<T> action)
         {
             if (queue == null)
             {
@@ -39,6 +39,10 @@
                 }
                 finally
                 {
+                    if (deadQueue != null && message.DequeueCount > 5)
+                    {
+                        deadQueue.AddMessage(message);
+                    }
                     if (success || message.DequeueCount > 5)
                     {
                         queue.DeleteMessage(message);
