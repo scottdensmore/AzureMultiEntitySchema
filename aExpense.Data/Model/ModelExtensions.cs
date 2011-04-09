@@ -1,6 +1,7 @@
 ﻿namespace AExpense.Data.Model
 {
     using System;
+    using System.IO;
     using AExpense.Data.Storage;
     using AExpense.Data.Enties;
 
@@ -64,16 +65,21 @@
 
         public static ExpenseItem ToModel(this IExpenseItemEntity entity)
         {
-           
             var expenseItem = new ExpenseItem
                                   {
                                       Id = new StorageKey(KeyGenerator.ExpenseItemEntitySuffix(entity.RowKey)).InvertedTicks,
                                       Amount = entity.Amount.HasValue ? entity.Amount.Value : 0,
                                       Description = entity.Description,
-                                      ReceiptUrl = string.IsNullOrEmpty(entity.ReceiptUrl) ? null : new Uri(entity.ReceiptUrl),
-                                      ReceiptThumbnailUrl = string.IsNullOrEmpty(entity.ReceiptThumbnailUrl) ? null : new Uri(entity.ReceiptThumbnailUrl)
+                                      //ReceiptUrl = string.IsNullOrEmpty(entity.ReceiptUrl) ? null : new Uri(entity.ReceiptUrl),
+                                      //ReceiptThumbnailUrl = string.IsNullOrEmpty(entity.ReceiptThumbnailUrl) ? null : new Uri(entity.ReceiptThumbnailUrl)
                                   };
 
+            var imageName = expenseItem.Id + ".jpg";
+            var account = CloudConfiguration.GetStorageAccount(AzureConnectionStrings.DataConnection);
+            string thumbnail = Path.Combine(account.BlobEndpoint.ToString(), AzureStorageNames.ReceiptContainerName, "thumbnails", imageName);
+            string receipt = Path.Combine(account.BlobEndpoint.ToString(), AzureStorageNames.ReceiptContainerName, imageName);
+            expenseItem.ReceiptThumbnailUrl = new Uri(thumbnail);
+            expenseItem.ReceiptUrl = new Uri(receipt);
             return expenseItem;
         }
 
