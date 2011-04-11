@@ -17,7 +17,6 @@
 
         public double? Amount { get; set; }
         public string Description { get; set; }
-        public string ReceiptThumbnailUrl { get; set; }
-        public string ReceiptUrl { get; set; }
+        public bool? HasReceipt { get; set; }
     }
 }

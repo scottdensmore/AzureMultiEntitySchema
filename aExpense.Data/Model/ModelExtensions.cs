@@ -2,8 +2,8 @@
 {
     using System;
     using System.IO;
-    using AExpense.Data.Storage;
     using AExpense.Data.Enties;
+    using AExpense.Data.Storage;
 
     public static class ModelExtensions
     {
@@ -17,7 +17,7 @@
                 model.UserName,
                 model.CostCenter,
                 Enum.GetName(
-                    typeof (ReimbursementMethod),
+                    typeof(ReimbursementMethod),
                     model.ReimbursementMethod),
                 model.TotalAmount);
         }
@@ -35,10 +35,9 @@
                                   Approved = entity.Approved.HasValue ? entity.Approved.Value : false,
                                   CostCenter = entity.CostCenter,
                                   Date = entity.Date.HasValue ? entity.Date.Value : DateTime.UtcNow,
-                                  ReimbursementMethod = (ReimbursementMethod) Enum.Parse(typeof (ReimbursementMethod), entity.ReimbursementMethod),
+                                  ReimbursementMethod = (ReimbursementMethod)Enum.Parse(typeof(ReimbursementMethod), entity.ReimbursementMethod),
                                   Title = entity.Title,
                                   UserName = entity.PartitionKey.DecodePartitionAndRowKey(),
-                                  //User = new User {UserName = entity.PartitionKey.DecodePartitionAndRowKey()},
                                   ApproverName = entity.ApproverName
                               };
 
@@ -56,7 +55,7 @@
                                         ReimbursementMethod =
                                             entity.ReimbursementMethod == null
                                                 ? ReimbursementMethod.NotSet
-                                                : (ReimbursementMethod) Enum.Parse(typeof (ReimbursementMethod), entity.ReimbursementMethod),
+                                                : (ReimbursementMethod)Enum.Parse(typeof(ReimbursementMethod), entity.ReimbursementMethod),
                                         TotalAmount = entity.TotalAmount,
                                         UserName = entity.UserName
                                     };
@@ -70,16 +69,19 @@
                                       Id = new StorageKey(KeyGenerator.ExpenseItemEntitySuffix(entity.RowKey)).InvertedTicks,
                                       Amount = entity.Amount.HasValue ? entity.Amount.Value : 0,
                                       Description = entity.Description,
-                                      //ReceiptUrl = string.IsNullOrEmpty(entity.ReceiptUrl) ? null : new Uri(entity.ReceiptUrl),
-                                      //ReceiptThumbnailUrl = string.IsNullOrEmpty(entity.ReceiptThumbnailUrl) ? null : new Uri(entity.ReceiptThumbnailUrl)
+                                      ReceiptUrl = null,
+                                      ReceiptThumbnailUrl = null
                                   };
 
-            var imageName = expenseItem.Id + ".jpg";
-            var account = CloudConfiguration.GetStorageAccount(AzureConnectionStrings.DataConnection);
-            string thumbnail = Path.Combine(account.BlobEndpoint.ToString(), AzureStorageNames.ReceiptContainerName, "thumbnails", imageName);
-            string receipt = Path.Combine(account.BlobEndpoint.ToString(), AzureStorageNames.ReceiptContainerName, imageName);
-            expenseItem.ReceiptThumbnailUrl = new Uri(thumbnail);
-            expenseItem.ReceiptUrl = new Uri(receipt);
+            if (entity.HasReceipt.HasValue && entity.HasReceipt.Value)
+            {
+                var imageName = expenseItem.Id + ".jpg";
+                var account = CloudConfiguration.GetStorageAccount(AzureConnectionStrings.DataConnection);
+                string thumbnail = Path.Combine(account.BlobEndpoint.ToString(), AzureStorageNames.ReceiptContainerName, "thumbnails", imageName);
+                string receipt = Path.Combine(account.BlobEndpoint.ToString(), AzureStorageNames.ReceiptContainerName, imageName);
+                expenseItem.ReceiptThumbnailUrl = new Uri(thumbnail);
+                expenseItem.ReceiptUrl = new Uri(receipt);
+            }
             return expenseItem;
         }
 
@@ -91,7 +93,7 @@
                                         RowKey = model.Id,
                                         ApproverName = model.ApproverName,
                                         CostCenter = model.CostCenter,
-                                        ReimbursementMethod = Enum.GetName(typeof (ReimbursementMethod), model.ReimbursementMethod),
+                                        ReimbursementMethod = Enum.GetName(typeof(ReimbursementMethod), model.ReimbursementMethod),
                                         UserName = model.UserName,
                                         TotalAmount = model.TotalAmount
                                     };
@@ -104,11 +106,11 @@
             var expense = new ExpenseEntity
                               {
                                   PartitionKey = model.UserName.EncodePartitionAndRowKey(),
-                                  RowKey = model.Id == null ? null : KeyGenerator.ExpenseEntityRowKey(model.Id.ToString()),
+                                  RowKey = model.Id == null ? null : KeyGenerator.ExpenseEntityRowKey(model.Id),
                                   Approved = model.Approved,
                                   CostCenter = model.CostCenter,
                                   Date = model.Date,
-                                  ReimbursementMethod = Enum.GetName(typeof (ReimbursementMethod), model.ReimbursementMethod),
+                                  ReimbursementMethod = Enum.GetName(typeof(ReimbursementMethod), model.ReimbursementMethod),
                                   Title = model.Title,
                                   ApproverName = model.ApproverName
                               };
@@ -121,11 +123,10 @@
             var expenseItem = new ExpenseItemEntity
                                   {
                                       PartitionKey = expensePartitionKey,
-                                      RowKey = KeyGenerator.ExpenseItemEntityRowKey(expenseId, model.Id.ToString()),
+                                      RowKey = KeyGenerator.ExpenseItemEntityRowKey(expenseId, model.Id),
                                       Amount = model.Amount,
                                       Description = model.Description,
-                                      ReceiptUrl = model.ReceiptUrl == null ? null : model.ReceiptUrl.OriginalString,
-                                      ReceiptThumbnailUrl = model.ReceiptThumbnailUrl == null ? null : model.ReceiptThumbnailUrl.OriginalString
+                                      HasReceipt = model.Receipt != null && model.Receipt.LongLength != 0
                                   };
 
             return expenseItem;
