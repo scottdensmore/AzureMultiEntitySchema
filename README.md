@@ -12,4 +12,4 @@ web role that saves both expense and expense items to one table.
 
 ## Blog Post(s)
 
-* 
+* [Multi Entity Schema](http://scottdensmore.typepad.com/blog/2011/04/multi-entity-schema-tables-in-windows-azure.html) 
