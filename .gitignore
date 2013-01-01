@@ -8,6 +8,7 @@ obj
 */Bin/
 */obj/
 */Obj/
+*/csx/
 
 # user settings
 *.user
